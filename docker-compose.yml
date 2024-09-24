@@ -1,0 +1,19 @@
+version: '3'
+services:
+
+  react-app:
+    # image: react_img
+    build: ./react-app
+    # used when image is needed to build while running the application
+    depends_on:
+      - api-server
+    ports:
+      - "3000:3000"
+
+# local mahcine port : container port number
+  
+  api-server:
+    build: ./server
+    # build: ../server
+    ports:
+     - "7000:7000"
