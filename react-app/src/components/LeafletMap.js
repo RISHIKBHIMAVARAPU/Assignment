@@ -7,11 +7,11 @@ import 'leaflet-draw';
 import axios from 'axios'; 
 
 const LeafletMapWithDrawing = () => {
-  const [coordinates, setCoordinates] = useState([]); // State to store coordinates
+  const [coordinates, setCoordinates] = useState([]); 
 
   // Custom hook to handle leaflet draw
   const InitializeDrawingTools = () => {
-    const map = useMap();  // Get the map instance using the hook
+    const map = useMap(); 
 
     useEffect(() => {
       if (!map) return;
@@ -24,30 +24,30 @@ const LeafletMapWithDrawing = () => {
       if (!map.drawControl) {
         const drawControl = new L.Control.Draw({
           draw: {
-            polygon: true,    // Allow polygons
-            rectangle: true,  // Allow rectangles
-            polyline: false,  // Disable polylines (lines)
-            circle: false,    // Disable circles
-            circlemarker: false, // Disable circle markers
-            marker: false,    // Disable markers
+            polygon: true,    
+            rectangle: true, 
+            polyline: false,  
+            circle: false,    
+            circlemarker: false, 
+            marker: false,    
           },
-          edit: false,  // Disable edit controls, no toolbar for editing and deleting
+          edit: false,  
         });
 
         // Add controls to the map
         map.addControl(drawControl);
-        map.drawControl = drawControl; // Save the control on the map object to avoid adding it again
+        map.drawControl = drawControl; 
       }
 
       // Handle when a shape is drawn
       map.on(L.Draw.Event.CREATED, async (event) => {
         const layer = event.layer;
-        drawnItems.addLayer(layer); // Add the drawn layer to the feature group
+        drawnItems.addLayer(layer); 
 
         // Get the coordinates of the drawn shape (polygon)
         const shapeCoordinates = layer.getLatLngs();
 
-        // Ensure the last point matches the first point (close the polygon)
+        
         const firstPoint = shapeCoordinates[0][0];
         shapeCoordinates[0].push(firstPoint);
 
@@ -55,23 +55,23 @@ const LeafletMapWithDrawing = () => {
         const geoJsonFormat = {
           type: "Polygon",
           coordinates: [
-            shapeCoordinates[0].map((point) => [point.lng, point.lat]) // Ensure order is [lng, lat]
+            shapeCoordinates[0].map((point) => [point.lng, point.lat]) 
           ]
         }
 
-        setCoordinates(geoJsonFormat.coordinates);  // Store coordinates in the desired format
-        console.log('Drawn polygon in GeoJSON format:', geoJsonFormat);  // Log to console
+        setCoordinates(geoJsonFormat.coordinates);  
+        console.log('Drawn polygon in GeoJSON format:', geoJsonFormat);  
 
-        // Make the API call with axios to send the GeoJSON to the server
+        
         try {
           const response = await axios.post('http://localhost:7000/intersection', geoJsonFormat);
-          console.log('API response:', response.data);  // Log the response from the server
+          console.log('API response:', response.data); 
           
-          // Extract coordinates and display each polygon in red
+         
           response.data.forEach((feature) => {
             const featureCoordinates = feature.geometry.coordinates[0].map((coord) => [coord[1], coord[0]]); // Flip [lng, lat] to [lat, lng]
 
-            // Create a new red polygon and add it to the map
+            
             const newPolygon = L.polygon(featureCoordinates, { color: 'red' });
             newPolygon.addTo(map);  // Add the red polygon to the map
           });
@@ -83,14 +83,14 @@ const LeafletMapWithDrawing = () => {
 
     }, [map]);
 
-    return null;  // This hook doesn't need to return anything
+    return null;  
   };
 
   return (
     <div>
       <MapContainer
-        center={[15.3173, 75.7139]}  // Center map on Karnataka, India
-        zoom={7}                     // Adjust zoom level as needed
+        center={[15.3173, 75.7139]}  
+        zoom={7}                     
         style={{ height: "500px", width: "100%" }}
       >
         <TileLayer
